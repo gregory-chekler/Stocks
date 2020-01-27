@@ -6,19 +6,16 @@
 __version__ = "1.0.0"
 __author__ = 'Gregory Chekler'
 
-import matplotlib.pyplot as plt
 from matplotlib import style
-import pandas as pd
 import pandas_datareader as web
 import datetime as dt
-import datetime
 
 def Stocks_graph(symb):
     """creates a graph of stock price
     
     :param symb: stock that will be analyzed
     :return stock graph"""
-    now = datetime.datetime.now()
+    now = dt.datetime.now()
     symb = str(symb)
     style.use("ggplot")
     start = dt.datetime(2006, 1, 1)
