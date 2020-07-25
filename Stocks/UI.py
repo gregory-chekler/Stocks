@@ -79,7 +79,7 @@ def show_instructions(event):
                        " the second box"
     elif selection == "Stock Graph":
         instructions = "Input the stock/ticker symbol in the first box. Then" +\
-                       " click  the submit and then the adpic button."
+                       " click the submit and then the adpic button."
     elif selection == "Composite news/data rating":
         instructions = "Input the stock/ticker symbol. This is an equation" +\
                      " that takes conclusion from analysts and determines if" +\
