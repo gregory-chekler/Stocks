@@ -7,6 +7,12 @@ __version__ = "1.0.0"
 __author__ = 'Gregory Chekler'
 
 import yfinance as yf
+import pandas
+
+pandas.set_option('display.max_rows', None)
+pandas.set_option('display.max_columns', None)
+pandas.set_option('display.width', None)
+pandas.set_option('display.max_colwidth', -1)
 
 def current_price(stock):
     """determines current stock price of a certain stock
