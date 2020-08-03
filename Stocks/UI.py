@@ -4,7 +4,7 @@
 '''provides user interface that allows typing into text boxes,
 selecting from different functions, and displaying results in a text area'''
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __author__ = 'Gregory Chekler'
 
 
@@ -78,8 +78,9 @@ def show_instructions(event):
                        " and then input the amount of months you want in" +\
                        " the second box"
     elif selection == "Stock Graph":
-        instructions = "Input the stock/ticker symbol in the first box. Then" +\
-                       " click the submit and then the adpic button."
+        instructions = "Input the stock/ticker symbol in the first box, the year in the second box," +\
+                       " the month in the third box, and the day in the fourth box. Then" +\
+                       " click the submit and then the add_pic button."
     elif selection == "Composite news/data rating":
         instructions = "Input the stock/ticker symbol. This is an equation" +\
                      " that takes conclusion from analysts and determines if" +\
@@ -132,7 +133,7 @@ def submit():
     '''called when the submit button is clicked'''
     
     global menu_var, results_display, entry_1, entry_2, entry_3
-    global entry_4, input_area, results_label
+    global entry_4, input_area, results_label, pic
     # gets values (as strings) from the entry boxes
     arg_1 = entry_1.get()
     arg_2 = entry_2.get()
@@ -144,7 +145,8 @@ def submit():
     # get text from large text area:
     
     large_text = input_area.get("1.0", tkinter.END)  # see explanation below:     
-    
+   # if selection == "Stock Graph":
+        #add_pic()
     # EXPLANATION:
      
       # "1.0" = STARTING point: means the input should be read from line 1, character 0
@@ -167,7 +169,8 @@ def submit():
     elif selection == "Stock History":
         display_text = finance_data.history(arg_1, arg_2)
     elif selection == "Stock Graph":
-        display_text = Stock_Graph.Stocks_graph(arg_1)
+        display_text = Stock_Graph.Stocks_graph(arg_1, arg_2, arg_3, arg_4)
+        add_pic()
     elif selection == "Composite news/data rating":
         display_text = finance_data.news(arg_1)
     elif selection == "Analyst Recommendations":
@@ -202,9 +205,12 @@ def submit():
     # deletes old text and insert results text into the large text area:
     input_area.configure(state="normal") # allow editing of text
     input_area.delete(1.0, tkinter.END)
-    input_area.insert(tkinter.END, display_text) # show results in text area
+    if selection == "Stock Graph":
+        input_area.insert(tkinter.END, add_pic())
+    else:
+        input_area.insert(tkinter.END, display_text) # show results in text area
     input_area.configure(state="disabled") # prevent editing of text
-    
+
 
 def main():
     global input_area
@@ -288,8 +294,7 @@ def main():
     
     # will call quitting_time when pressed:
     quit_button = tkinter.Button(root, text="Quit", command=quitting_time)
-    
-    pic_button = tkinter.Button(root, text="addpic", command=add_pic)
+
     ###################################
     # 5. SET UP PULLDOWN MENU OF FUNCTION CHOICES:
     ###################################
@@ -312,7 +317,6 @@ def main():
     # place the buttons in the top middle:
     submit_button.grid(row=0, column=1, columnspan=1)
     quit_button.grid(  row=0, column=2, columnspan=1)
-    pic_button.grid(  row=0, column=3, columnspan=1)
 
     # sets up argument input boxes...ADD MORE IF YOU NEED THEM!!!
     entry_1 = tkinter.Entry()  # makes an Entry object

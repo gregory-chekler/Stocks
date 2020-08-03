@@ -3,14 +3,15 @@
 
 '''Creates a graph of a certain stock'''
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __author__ = 'Gregory Chekler'
 
 from matplotlib import style
+import pandas
 import pandas_datareader as web
 import datetime as dt
 
-def Stocks_graph(symb):
+def Stocks_graph(symb, year, month, day):
     """creates a graph of stock price
     
     :param symb: stock that will be analyzed
@@ -18,8 +19,11 @@ def Stocks_graph(symb):
     now = dt.datetime.now()
     symb = str(symb)
     style.use("ggplot")
-    start = dt.datetime(2006, 1, 1)
-    end = dt.datetime(int(now.year), int(now.month), int(now.day))
+    if year == '' and month == '' and day == '':
+        start = dt.datetime(2010, 1, 1)
+    else:
+        start = dt.datetime(int(year), int(month), int(day))
+    end = dt.datetime((now.year), int(now.month), int(now.day))
     df = web.get_data_yahoo(symb, start, end)
     figure = df["Adj Close"].plot()
     f = figure.get_figure()
