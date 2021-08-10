@@ -47,7 +47,7 @@ def history(stock, time):
     hist = str(stock.history(period=(str(time)) + "mo"))
     return hist
 
-def trend(stock, time):
+def trend(stock, time=1):
     """determines current stock trends within a time period
     
     :param stock: stock that will be analyzed
@@ -129,7 +129,7 @@ def trend(stock, time):
 ###########################
 ### Volume interpreter
 ###########################
-def volume(stock, time):
+def volume(stock, time=1):
     """analyzes current stock volume within a time period
     
     :param stock: stock that will be analyzed
@@ -327,7 +327,7 @@ def news(stock):
     :param stock: stock that will be analyzed
     :return recommendations value"""
     stock = yf.Ticker(str(stock))
-    reco = str(stock.recommendations) # Stands for recomend
+    reco = str(stock.recommendations) # Stands for recommend
     reco = reco.split()
     reco.reverse()
     del reco[15 :-1]
@@ -367,21 +367,57 @@ def calendar(stock):
     :return events"""
     stock = yf.Ticker(str(stock))
     return stock.calendar
-      
-def predictor(stock, time):
+
+
+def LaplaceLawOfSuccession(stock, time=1):#take numeber of times stock has gone up to find out chance it happens again
+    stock = yf.Ticker(str(stock))
+    hist = str(stock.history(period=(str(time)) + "mo"))
+
+    high_price = []
+
+    l = hist.split()  # List form of hist split into individual words
+
+    ############################################
+    ### CREATES LISTS OF FINANCIAL DATA PER DAY
+    ############################################
+    START_OF_LIST = 10
+    INTERVAL = 8
+    END_OF_LIST = len(l) - 6
+
+
+    for i in range(START_OF_LIST + 1, END_OF_LIST + 1, INTERVAL): #to find all data and put into a list
+        high_price.append(l[i])
+
+    higher_price_counter = 0 #counter to see how many times price is higher than previous
+    high_counter = 0
+    for i in range(len(high_price)-1): #checks to see how many times price is higher than previous
+        if float(high_price[i+1]) > float(high_price[i]):
+            high_counter += 1
+            higher_price_counter += 1
+
+    prediction = (higher_price_counter + 1)/(len(high_price) + 2) #chance price goes up
+
+    return prediction
+
+
+def predictor(stock, time=1):
     """predicts future stock price
     
     :param stock: stock that will be analyzed
     :param time: time period that is used
     :return future stock price"""
     # Interprets trends into numbers
+
+    trends = 1 #if trends function doesn't work, then value of 1 wont change the prediction
+    vol = 1 #if volume function doesn't work, then value of 1 wont change the prediction
+
     if trend(stock, time) == "Weak Low trend":
         trends = .995
-    if trend(stock, time) == "Weak High trend":
+    elif trend(stock, time) == "Weak High trend":
         trends = 1.005
-    if trend(stock, time) == "Strong Low trend":
+    elif trend(stock, time) == "Strong Low trend":
         trends = .99
-    if trend(stock, time) == "Strong High trend":
+    elif trend(stock, time) == "Strong High trend":
         trends = 1.01
 
     current = float(current_price(stock))
@@ -389,17 +425,14 @@ def predictor(stock, time):
     # Interprets volume into numbers
     if volume(stock, time) == "High Volume: Sell":
         vol = .9875
-    if volume(stock, time) == "High Volume: Buy":
+    elif volume(stock, time) == "High Volume: Buy":
         vol = 1.015
-    if volume(stock, time) == "Equal Volume":
+    elif volume(stock, time) == "Equal Volume":
         vol = 1
-    if volume(stock, time) == "Low Volume":
+    elif volume(stock, time) == "Low Volume":
         vol = .99
-    
-    change = float(change_per_day(stock, time) / 100)
-        
-    prediction = "$" + str(current * trends * vol) + " within a range of $" + str(
-        current * (change))
+
+    prediction = float(current * trends * vol)
     return prediction
 
 # Big thank you to Mr. Beckwith for helping figure out some of the collection of data
