@@ -9,12 +9,14 @@ __author__ = 'Gregory Chekler'
 
 
 import finance_data
+import users
 from tkinter import PhotoImage
 import tkinter
 from tkinter.font import Font
 import time
 from PIL import Image
 
+users.import_saved_data()#takes all of the data saved from previous use and applies it to current run of program
 
 # these words will appear in the menu:
 OPTIONS = [
@@ -33,7 +35,15 @@ OPTIONS = [
     "Average change per day",
     "Average change from day to day",
     "Volume interpreter",
-    "Stock Price Prediction"
+    "Stock Price Prediction",
+    "Create user",
+    "Add stock to portfolio",
+    "Delete stock from portfolio",
+    "Show portfolio value",
+    "Show ROI",
+    "Show portfolio",
+    "Show prediction",
+    "Show success rate"
     
     ]
 
@@ -49,6 +59,7 @@ root.title("Stock analysis")  #set title to something you like
 ###################################
 def quitting_time():
     '''called when Quit button is pressed'''
+    users.save_info()   #for saving user info using pickle
     root.destroy()
   
 def add_pic():
@@ -119,6 +130,25 @@ def show_instructions(event):
                        " the second box"
     elif selection == "Current Price":
         instructions = "Input the stock/ticker symbol in the first box"
+    elif selection == "Create user":
+        instructions = "Input the name of the user in the first box"
+    elif selection == "Add stock to portfolio":
+        instructions = "Input the portfolio owner's name in the first box, the stock ticker in" +\
+                       " the second box and the number of shares in the third box"
+    elif selection == "Delete stock from portfolio":
+        instructions = "Input the portfolio owner's name in the first box, and the stock ticker in" +\
+                       " the second box"
+    elif selection == "Show portfolio value":
+        instructions = "Input the portfolio owner's name in the first box"
+    elif selection == "Show ROI":
+        instructions = "Input the portfolio owner's name in the first box"
+    elif selection == "Show portfolio":
+        instructions = "Input the portfolio owner's name in the first box"
+    elif selection == "Show prediction":
+        instructions = "Input the portfolio owner's name in the first box, and the stock ticker in" + \
+                       " the second box"
+    elif selection == "Show success rate":
+        instructions = "Input the portfolio owner's name in the first box"
     else :
         instructions = "Nothing selected yet"
         
@@ -192,9 +222,34 @@ def submit():
     elif selection == "Volume interpreter":
         display_text = finance_data.volume(arg_1, arg_2)
     elif selection == "Stock Price Prediction":
-        display_text = finance_data.predictor(arg_1, arg_2)
+        display_text = "$" + str(finance_data.predictor(arg_1, arg_2)) + " within a range of $" + str(
+            float(finance_data.current_price(arg_1)) * float(finance_data.change_per_day(arg_1, arg_2))/100)
     elif selection == "Current Price":
         display_text = finance_data.current_price(arg_1)
+    elif selection == "Create user":
+        display_text = users.create_user(arg_1)
+        user = users.select_user(str(arg_1))
+    elif selection == "Add stock to portfolio":
+        user = users.select_user(str(arg_1))
+        display_text = str(user.add_stock(arg_2, arg_3))
+    elif selection == "Delete stock from portfolio":
+        user = users.select_user(str(arg_1))
+        display_text = str(user.delete_stock(arg_2))
+    elif selection == "Show portfolio value":
+        user = users.select_user(str(arg_1))
+        display_text = str(user.portfolio_value())
+    elif selection == "Show ROI":
+        user = users.select_user(str(arg_1))
+        display_text = str(user.return_on_investment())
+    elif selection == "Show portfolio":
+        user = users.select_user(str(arg_1))
+        display_text = str(user.show_portfolio())
+    elif selection == "Show prediction":
+        user = users.select_user(str(arg_1))
+        display_text = str(user.show_prediction(arg_2))
+    elif selection == "Show success rate":
+        user = users.select_user(str(arg_1))
+        display_text = str(user.success())
     else:
         display_text = "No function selected or not ready yet"
         
@@ -249,17 +304,9 @@ def main():
                            "Welcome to the stock analysis software. " +\
                            "This software will help you make informed market" +\
                            " decisions, and predict future stock price. " +\
-                           "As this is an early build of the software, there" +\
-                           " are a couple restrictions on what can be done." +\
-                           " Right now, please refrain from inputting stocks" +\
-                           " that are over $1000 dollars, and if you do not see" +\
-                           " anything in the display area, there may either" +\
-                           " be no data, or there may be a bug. Also, " +\
-                           "when using the stock graph, if used more than once," +\
-                           " it may display two stocks at the same time. If " +\
-                           "this happens, please restart the software." +\
-                           " All these bugs will be fixed in the future. " +\
-                           "Otherwise, enjoy!")         # insesrts default text
+                            "To save user data, use the quit button when exiting " +\
+                            "and not the x button on the top right corner. "
+                           "Enjoy!")         # insesrts default text
     results_display.configure(state="disabled")
     
     ###################################
@@ -272,7 +319,7 @@ def main():
                             font=my_font,
                             foreground='red',
                             background='black')
-#     im = Image.open('Stock_Graph.png') Keep this for future edits(for addign stock graph)
+#     im = Image.open('Stock_Graph.png') Keep this for future edits(for adding stock graph)
 # 
 #     im = im.convert('RGB').convert('P', palette = Image.ADAPTIVE)
 #     im.save('sg.gif')
